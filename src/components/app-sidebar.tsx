@@ -35,7 +35,7 @@ const menuItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" variant="floating">
+    <Sidebar>
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>
@@ -47,7 +47,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild tooltip={item.title}>
                     <a href={item.url}>
                       <item.icon />
-                      <span>{item.title}</span>
+                      <span className="text-lg">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
