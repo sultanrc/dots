@@ -15,6 +15,8 @@ export const supabaseProxy = async (request: NextRequest) => {
     },
   });
 
+  // ! ini adalah standard kode langsung dari supabase, biasanya dicopy paste aja dari dokumentasi supabase.
+
   const supabase = createServerClient(
     ENVIRONMENT.supabaseUrl!,
     ENVIRONMENT.supabaseKey!,
