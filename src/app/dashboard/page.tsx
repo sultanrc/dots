@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { SummaryCards } from "./_components/summary-cards";
 
 export const metadata: Metadata = {
   title: "DOTS - Dashboard",
@@ -15,7 +16,9 @@ export default function DashboardPage() {
           finances.
         </p>
       </section>
-      <section id="content"></section>
+      <section id="content">
+        <SummaryCards />
+      </section>
     </div>
   );
 }
