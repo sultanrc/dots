@@ -4,7 +4,9 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardAction,
   CardContent,
+  CardFooter,
 } from "@/components/ui/card";
 
 export async function SummaryCards() {
@@ -28,22 +30,22 @@ export async function SummaryCards() {
       value: totalOutstanding,
     },
     {
-      title: "Need to Update",
+      title: "Need to Updated Documents",
       description: "Total number of documents that need updates",
       value: totalNeedUpdate,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="flex gap-4 max-w-full">
       {cards.map((card) => (
-        <Card key={card.title}>
+        <Card key={card.title} className="flex-1">
           <CardHeader>
             <CardTitle>{card.title}</CardTitle>
             <CardDescription>{card.description}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{card.value}</p>
+            <p>{card.value}</p>
           </CardContent>
         </Card>
       ))}

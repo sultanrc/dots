@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { SummaryCards } from "./_components/summary-cards";
+import { ActionRequiredList } from "./_components/action-required-list";
 
 export const metadata: Metadata = {
   title: "DOTS - Dashboard",
@@ -16,9 +17,14 @@ export default function DashboardPage() {
           finances.
         </p>
       </section>
-      <section id="content">
-        <SummaryCards />
-      </section>
+      <div className="flex flex-col gap-14">
+        <section id="summary-cards">
+          <SummaryCards />
+        </section>
+        <section id="action-required-list">
+          <ActionRequiredList />
+        </section>
+      </div>
     </div>
   );
 }
