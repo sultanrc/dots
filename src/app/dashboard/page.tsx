@@ -17,7 +17,7 @@ export default function DashboardPage() {
           finances.
         </p>
       </section>
-      <div className="flex flex-col gap-14">
+      <div className="flex flex-col gap-12">
         <section id="summary-cards">
           <SummaryCards />
         </section>

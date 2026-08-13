@@ -34,3 +34,20 @@ export async function getDataSummary() {
     totalNeedUpdate: totalNeedUpdate ?? 0,
   };
 }
+
+export async function getActionRequiredDocuments() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("document")
+    .select("id, document_name, document_number, status, created_at")
+    .neq("status", "APPROVED")
+    .order("created_at", { ascending: false }); // paling muda (baru) di atas
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data;
+}

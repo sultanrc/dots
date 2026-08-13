@@ -1,7 +1,7 @@
 import { type NextRequest } from "next/server";
 import { supabaseProxy } from "./lib/supabase/proxy";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   return await supabaseProxy(request);
 }
 
