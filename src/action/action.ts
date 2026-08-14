@@ -40,9 +40,9 @@ export async function getActionRequiredDocuments() {
 
   const { data, error } = await supabase
     .from("document")
-    .select("id, document_name, document_number, status, created_at")
+    .select("id, document_name, document_number, rev, status, created_at")
     .neq("status", "APPROVED")
-    .order("created_at", { ascending: false }); // paling muda (baru) di atas
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
