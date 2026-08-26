@@ -22,8 +22,8 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Outstanding",
-    url: "/dashboard/outstanding",
+    title: "History",
+    url: "/dashboard/submission-history",
     icon: FileClock,
   },
   {
