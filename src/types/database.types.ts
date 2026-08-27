@@ -124,7 +124,20 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      submissions: {
+        Row: {
+          created_at: string | null
+          document_name: string | null
+          document_number: string | null
+          document_type: string | null
+          id: string | null
+          return_date: string | null
+          rev: number | null
+          status: Database["public"]["Enums"]["doc_status"] | null
+          tr_number: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       show_limit: { Args: never; Returns: number }

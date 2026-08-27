@@ -5,7 +5,7 @@ export default async function Submissions() {
     <div className="px-6 py-4 space-y-4">
       <section id="header">
         <h1 className="text-4xl font-bold">Submissions</h1>
-        <p>
+        <p className="text-muted-foreground text-sm">
           All documents that have ever been submitted, regardless of status.
         </p>
       </section>

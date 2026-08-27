@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -34,7 +35,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { Fragment } from "react/jsx-runtime";
 
 const statusStyles: Record<string, string> = {
   WAITING_FOR_APPROVAL: "bg-yellow-400 text-black",
@@ -43,6 +43,23 @@ const statusStyles: Record<string, string> = {
   APPROVED_WITH_COMMENT: "bg-orange-400 text-black",
   APPROVED: "bg-green-600 text-white",
 };
+
+function SortIcon({
+  column,
+  sortBy,
+  sortOrder,
+}: {
+  column: "tr_number" | "created_at";
+  sortBy: string;
+  sortOrder: "asc" | "desc";
+}) {
+  if (sortBy !== column) return <ArrowUpDown className="size-2.5 opacity-40" />;
+  return sortOrder === "asc" ? (
+    <ArrowUp className="size-2.5" />
+  ) : (
+    <ArrowDown className="size-2.5" />
+  );
+}
 
 export default function SubmissionsTable({
   documents,
@@ -54,6 +71,10 @@ export default function SubmissionsTable({
   setPage,
   setLimit,
   setSearch,
+  sortBy,
+  sortOrder,
+  setSortBy,
+  setSortOrder,
 }: {
   documents?: Awaited<ReturnType<typeof getSubmissions>>;
   page: number;
@@ -64,6 +85,10 @@ export default function SubmissionsTable({
   setSearch: (search: string) => void;
   isLoading: boolean;
   refetch: () => void;
+  sortBy: "tr_number" | "created_at";
+  sortOrder: "asc" | "desc";
+  setSortBy: (sortBy: "tr_number" | "created_at") => void;
+  setSortOrder: (sortOrder: "asc" | "desc") => void;
 }) {
   const [localSearch, setLocalSearch] = useState(search);
 
@@ -78,7 +103,7 @@ export default function SubmissionsTable({
   });
 
   return (
-    <Fragment>
+    <>
       <Card className="w-full gap-2">
         <CardHeader className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
           <div>
@@ -92,16 +117,57 @@ export default function SubmissionsTable({
         </CardHeader>
         <CardContent>
           <Table>
-            <TableCaption>A list of all submitted documents.</TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead>TR</TableHead>
+                <TableHead
+                  className="cursor-pointer select-none"
+                  onClick={() => {
+                    if (sortBy === "tr_number") {
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    } else {
+                      setSortBy("tr_number");
+                      setSortOrder("asc");
+                    }
+                    setPage(1);
+                  }}
+                >
+                  <div className="flex items-center gap-1">
+                    TR
+                    <SortIcon
+                      column="tr_number"
+                      sortBy={sortBy}
+                      sortOrder={sortOrder}
+                    />
+                  </div>
+                </TableHead>
+
                 <TableHead>Document Name</TableHead>
                 <TableHead>Doc. Number</TableHead>
                 <TableHead>Rev</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Return Date</TableHead>
-                <TableHead className="text-right">Submitted</TableHead>
+
+                <TableHead
+                  className="text-right cursor-pointer select-none"
+                  onClick={() => {
+                    if (sortBy === "created_at") {
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    } else {
+                      setSortBy("created_at");
+                      setSortOrder("asc");
+                    }
+                    setPage(1);
+                  }}
+                >
+                  <div className="flex items-center justify-end gap-1">
+                    Submitted
+                    <SortIcon
+                      column="created_at"
+                      sortBy={sortBy}
+                      sortOrder={sortOrder}
+                    />
+                  </div>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -109,7 +175,7 @@ export default function SubmissionsTable({
                 documents?.data?.map((doc) => (
                   <TableRow key={doc.id}>
                     <TableCell className="font-medium">
-                      {doc.transmittal?.tr_number}
+                      {doc.tr_number}
                     </TableCell>
                     <TableCell>{doc.document_name}</TableCell>
                     <TableCell>{doc.document_number}</TableCell>
@@ -117,7 +183,8 @@ export default function SubmissionsTable({
                     <TableCell>
                       <span
                         className={`px-2 py-0.5 rounded text-xs font-medium ${
-                          statusStyles[doc.status] ?? "bg-gray-300 text-black"
+                          statusStyles[doc.status ?? ""] ??
+                          "bg-gray-300 text-black"
                         }`}
                       >
                         {doc.status}
@@ -125,7 +192,9 @@ export default function SubmissionsTable({
                     </TableCell>
                     <TableCell>{doc.return_date ?? "-"}</TableCell>
                     <TableCell className="text-right">
-                      {new Date(doc.created_at).toLocaleDateString("id-ID")}
+                      {doc.created_at
+                        ? new Date(doc.created_at).toLocaleDateString("id-ID")
+                        : "-"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -188,6 +257,6 @@ export default function SubmissionsTable({
           </div>
         </CardContent>
       </Card>
-    </Fragment>
+    </>
   );
 }

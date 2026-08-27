@@ -58,17 +58,28 @@ export async function getSubmissions(params?: {
   limit?: number;
   page?: number;
   search?: string;
+  sortBy?: "tr_number" | "created_at";
+  sortOrder?: "asc" | "desc";
 }) {
-  const { limit = 10, page = 1, search } = params || {};
+  const {
+    limit = 10,
+    page = 1,
+    search,
+    sortBy = "created_at",
+    sortOrder = "desc",
+  } = params || {};
+
   const supabase = await createClient();
 
-  let query = supabase
-    .from("document")
-    .select(
-      "id, document_name, document_number, rev, status, return_date, created_at, transmittal:transmittal_id(tr_number)",
-      { count: "exact" },
-    )
-    .order("created_at", { ascending: false });
+  let query = supabase.from("submissions").select("*", { count: "exact" });
+
+  if (sortBy === "tr_number") {
+    query = query.order("tr_number", {
+      ascending: sortOrder === "asc",
+    });
+  } else {
+    query = query.order("created_at", { ascending: sortOrder === "asc" });
+  }
 
   if (search) {
     query = query.or(
@@ -80,8 +91,6 @@ export async function getSubmissions(params?: {
   const to = from + limit - 1;
 
   const { data, error, count } = await query.range(from, to);
-
-  console.log(JSON.stringify(data, null, 2));
 
   if (error) throw new Error(error.message);
 

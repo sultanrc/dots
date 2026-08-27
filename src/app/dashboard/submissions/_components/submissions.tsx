@@ -10,10 +10,16 @@ export default function SubmissionsPage() {
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
 
+  const [sortBy, setSortBy] = useState<"tr_number" | "created_at">(
+    "created_at",
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["documents", page, limit, search],
-    queryFn: () => getSubmissions({ page, limit, search }),
+    queryKey: ["documents", page, limit, search, sortBy, sortOrder],
+    queryFn: () => getSubmissions({ page, limit, search, sortBy, sortOrder }),
   });
+
   return (
     <>
       <SubmissionsTable
@@ -26,6 +32,10 @@ export default function SubmissionsPage() {
         setPage={setPage}
         setLimit={setLimit}
         setSearch={setSearch}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
       />
     </>
   );

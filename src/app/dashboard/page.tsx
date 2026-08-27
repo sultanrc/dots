@@ -12,7 +12,7 @@ export default function DashboardPage() {
     <div className="px-6 py-4 space-y-4">
       <section id="header">
         <h1 className="text-4xl font-bold">Dashboard</h1>
-        <p>
+        <p className="text-muted-foreground text-sm">
           Get insights into your spending, track your expenses, and manage your
           finances.
         </p>
