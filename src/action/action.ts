@@ -81,6 +81,8 @@ export async function getSubmissions(params?: {
 
   const { data, error, count } = await query.range(from, to);
 
+  console.log(JSON.stringify(data, null, 2));
+
   if (error) throw new Error(error.message);
 
   const totalData = count || 0;

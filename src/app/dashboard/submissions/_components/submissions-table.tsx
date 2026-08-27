@@ -109,7 +109,7 @@ export default function SubmissionsTable({
                 documents?.data?.map((doc) => (
                   <TableRow key={doc.id}>
                     <TableCell className="font-medium">
-                      {doc.transmittal?.[0]?.tr_number}
+                      {doc.transmittal?.tr_number}
                     </TableCell>
                     <TableCell>{doc.document_name}</TableCell>
                     <TableCell>{doc.document_number}</TableCell>
