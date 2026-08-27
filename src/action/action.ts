@@ -1,3 +1,5 @@
+"use server";
+
 import { createClient } from "@/lib/supabase/server";
 
 export async function getDataSummary() {
@@ -52,7 +54,7 @@ export async function getActionRequiredDocuments() {
   return data;
 }
 
-export async function getSubmissionHistory(params?: {
+export async function getSubmissions(params?: {
   limit?: number;
   page?: number;
   search?: string;

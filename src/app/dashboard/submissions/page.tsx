@@ -1,17 +1,17 @@
-import SubmissionHistoryTable from "./_components/submission-history-table";
+import SubmissionsPage from "./_components/submissions";
 
-export default async function SubmissionHistory() {
+export default async function Submissions() {
   return (
     <div className="px-6 py-4 space-y-4">
       <section id="header">
-        <h1 className="text-4xl font-bold">Submission History</h1>
+        <h1 className="text-4xl font-bold">Submissions</h1>
         <p>
           All documents that have ever been submitted, regardless of status.
         </p>
       </section>
 
       <section id="submission-history-table">
-        <SubmissionHistoryTable />
+        <SubmissionsPage />
       </section>
     </div>
   );

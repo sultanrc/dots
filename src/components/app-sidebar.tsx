@@ -23,7 +23,7 @@ const menuItems = [
   },
   {
     title: "History",
-    url: "/dashboard/submission-history",
+    url: "/dashboard/submissions",
     icon: FileClock,
   },
   {
