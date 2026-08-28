@@ -91,6 +91,8 @@ export default function SubmissionsTable({
   setSortOrder: (sortOrder: "asc" | "desc") => void;
 }) {
   const [localSearch, setLocalSearch] = useState(search);
+  const [fontSize, setFontSize] = useState(14);
+  const fontSizes = [14, 12, 10];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -114,9 +116,25 @@ export default function SubmissionsTable({
               className="w-full"
             />
           </div>
+          <div className="flex items-center text-muted-foreground">
+            <p className="text-xs font-medium mr-3">Font size:</p>
+
+            {fontSizes.map((size) => (
+              <span
+                key={size}
+                onClick={() => setFontSize(size)}
+                style={{ fontSize: `${size}px` }}
+                className={`cursor-pointer px-2 py-1 ${
+                  fontSize === size ? "bg-stone-300 text-white" : ""
+                }`}
+              >
+                A
+              </span>
+            ))}
+          </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table style={{ fontSize: `${fontSize}px` }}>
             <TableHeader>
               <TableRow>
                 <TableHead

@@ -26,11 +26,11 @@ const menuItems = [
     url: "/dashboard/submissions",
     icon: FileClock,
   },
-  {
-    title: "EDL",
-    url: "/dashboard/edl",
-    icon: FileText,
-  },
+  // {
+  //   title: "EDL",
+  //   url: "/dashboard/edl",
+  //   icon: FileText,
+  // },
 ];
 
 export function AppSidebar() {
