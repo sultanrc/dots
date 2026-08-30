@@ -24,6 +24,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Columns3 } from "lucide-react";
 import { DocStatus, getSubmissions } from "@/action/action";
 import {
   Table,
@@ -43,6 +51,18 @@ const statusStyles: Record<string, string> = {
   APPROVED_WITH_COMMENT: "bg-orange-400 text-black",
   APPROVED: "bg-green-600 text-white",
 };
+
+const COLUMNS = [
+  { key: "tr_number", label: "TR" },
+  { key: "document_name", label: "Document Name" },
+  { key: "document_number", label: "Doc. Number" },
+  { key: "rev", label: "Rev" },
+  { key: "status", label: "Status" },
+  { key: "return_date", label: "Return Date" },
+  { key: "created_at", label: "Submitted" },
+] as const;
+
+type ColumnKey = (typeof COLUMNS)[number]["key"];
 
 function SortIcon({
   column,
@@ -108,6 +128,16 @@ export default function SubmissionsTable({
     return () => clearTimeout(timer);
   });
 
+  const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(
+    COLUMNS.map((c) => c.key), // default: semua kolom tampil
+  );
+
+  function toggleColumn(key: ColumnKey) {
+    setVisibleColumns((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    );
+  }
+
   return (
     <>
       <Card className="w-full gap-2">
@@ -120,7 +150,7 @@ export default function SubmissionsTable({
               className="w-full"
             />
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 text-muted-foreground">
             <Select
               value={status}
               onValueChange={(value) => {
@@ -128,7 +158,7 @@ export default function SubmissionsTable({
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-40 text-muted-foreground text-xs">
+              <SelectTrigger className="w-40 text-xs">
                 <SelectValue placeholder={status} />
               </SelectTrigger>
               <SelectContent>
@@ -153,7 +183,26 @@ export default function SubmissionsTable({
                 ))}
               </SelectContent>
             </Select>
-            <div className="flex items-center text-muted-foreground">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Columns3 className="size-4 mr-1" />
+                  Columns
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {COLUMNS.map((col) => (
+                  <DropdownMenuCheckboxItem
+                    key={col.key}
+                    checked={visibleColumns.includes(col.key)}
+                    onCheckedChange={() => toggleColumn(col.key)}
+                  >
+                    {col.label}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <div className="flex items-center">
               <p className="text-xs font-medium mr-3">Font size:</p>
 
               {fontSizes.map((size) => (
@@ -177,55 +226,66 @@ export default function SubmissionsTable({
           <Table style={{ fontSize: `${fontSize}px` }}>
             <TableHeader>
               <TableRow>
-                <TableHead
-                  className="cursor-pointer select-none"
-                  onClick={() => {
-                    if (sortBy === "tr_number") {
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                    } else {
-                      setSortBy("tr_number");
-                      setSortOrder("asc");
-                    }
-                    setPage(1);
-                  }}
-                >
-                  <div className="flex items-center gap-1">
-                    TR
-                    <SortIcon
-                      column="tr_number"
-                      sortBy={sortBy}
-                      sortOrder={sortOrder}
-                    />
-                  </div>
-                </TableHead>
+                {visibleColumns.includes("tr_number") && (
+                  <TableHead
+                    className="cursor-pointer select-none"
+                    onClick={() => {
+                      if (sortBy === "tr_number") {
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                      } else {
+                        setSortBy("tr_number");
+                        setSortOrder("asc");
+                      }
+                      setPage(1);
+                    }}
+                  >
+                    <div className="flex items-center gap-1">
+                      TR
+                      <SortIcon
+                        column="tr_number"
+                        sortBy={sortBy}
+                        sortOrder={sortOrder}
+                      />
+                    </div>
+                  </TableHead>
+                )}
 
-                <TableHead>Document Name</TableHead>
-                <TableHead>Doc. Number</TableHead>
-                <TableHead>Rev</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Return Date</TableHead>
-
-                <TableHead
-                  className="text-right cursor-pointer select-none"
-                  onClick={() => {
-                    if (sortBy === "created_at") {
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                    } else {
-                      setSortBy("created_at");
-                      setSortOrder("asc");
-                    }
-                    setPage(1);
-                  }}
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    Submitted
-                    <SortIcon
-                      column="created_at"
-                      sortBy={sortBy}
-                      sortOrder={sortOrder}
-                    />
-                  </div>
-                </TableHead>
+                {visibleColumns.includes("document_name") && (
+                  <TableHead>Document Name</TableHead>
+                )}
+                {visibleColumns.includes("document_number") && (
+                  <TableHead>Doc. Number</TableHead>
+                )}
+                {visibleColumns.includes("rev") && <TableHead>Rev</TableHead>}
+                {visibleColumns.includes("status") && (
+                  <TableHead>Status</TableHead>
+                )}
+                {visibleColumns.includes("return_date") && (
+                  <TableHead>Return Date</TableHead>
+                )}
+                {visibleColumns.includes("created_at") && (
+                  <TableHead
+                    className="text-right cursor-pointer select-none"
+                    onClick={() => {
+                      if (sortBy === "created_at") {
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                      } else {
+                        setSortBy("created_at");
+                        setSortOrder("asc");
+                      }
+                      setPage(1);
+                    }}
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      Submitted
+                      <SortIcon
+                        column="created_at"
+                        sortBy={sortBy}
+                        sortOrder={sortOrder}
+                      />
+                    </div>
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
