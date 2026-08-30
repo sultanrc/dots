@@ -2,6 +2,14 @@
 
 import { createClient } from "@/lib/supabase/server";
 
+export type DocStatus =
+  | "APPROVED"
+  | "APPROVED_WITH_COMMENT"
+  | "NOT_APPROVED"
+  | "WAITING_FOR_APPROVAL"
+  | "CANCELLED"
+  | "RECALLED";
+
 export async function getDataSummary() {
   const supabase = await createClient();
 
@@ -60,6 +68,7 @@ export async function getSubmissions(params?: {
   search?: string;
   sortBy?: "tr_number" | "created_at";
   sortOrder?: "asc" | "desc";
+  status?: DocStatus | "ALL";
 }) {
   const {
     limit = 10,
@@ -67,6 +76,7 @@ export async function getSubmissions(params?: {
     search,
     sortBy = "created_at",
     sortOrder = "desc",
+    status,
   } = params || {};
 
   const supabase = await createClient();
@@ -85,6 +95,10 @@ export async function getSubmissions(params?: {
     query = query.or(
       `document_name.ilike.%${search}%,document_number.ilike.%${search}%`,
     );
+  }
+
+  if (status && status !== "ALL") {
+    query = query.eq("status", status);
   }
 
   const from = (page - 1) * limit;

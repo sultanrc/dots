@@ -3,12 +3,13 @@
 import { useState } from "react";
 import SubmissionsTable from "./submissions-table";
 import { useQuery } from "@tanstack/react-query";
-import { getSubmissions } from "@/action/action";
+import { DocStatus, getSubmissions } from "@/action/action";
 
 export default function SubmissionsPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<DocStatus | "ALL">("ALL");
 
   const [sortBy, setSortBy] = useState<"tr_number" | "created_at">(
     "created_at",
@@ -16,8 +17,9 @@ export default function SubmissionsPage() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["documents", page, limit, search, sortBy, sortOrder],
-    queryFn: () => getSubmissions({ page, limit, search, sortBy, sortOrder }),
+    queryKey: ["documents", page, limit, search, sortBy, sortOrder, status],
+    queryFn: () =>
+      getSubmissions({ page, limit, search, sortBy, sortOrder, status }),
   });
 
   return (
@@ -36,6 +38,8 @@ export default function SubmissionsPage() {
         setSortBy={setSortBy}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
+        status={status}
+        setStatus={setStatus}
       />
     </>
   );

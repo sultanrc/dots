@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getSubmissions } from "@/action/action";
+import { DocStatus, getSubmissions } from "@/action/action";
 import {
   Table,
   TableBody,
@@ -75,6 +75,8 @@ export default function SubmissionsTable({
   sortOrder,
   setSortBy,
   setSortOrder,
+  status,
+  setStatus,
 }: {
   documents?: Awaited<ReturnType<typeof getSubmissions>>;
   page: number;
@@ -89,6 +91,8 @@ export default function SubmissionsTable({
   sortOrder: "asc" | "desc";
   setSortBy: (sortBy: "tr_number" | "created_at") => void;
   setSortOrder: (sortOrder: "asc" | "desc") => void;
+  status: DocStatus | "ALL";
+  setStatus: (status: DocStatus | "ALL") => void;
 }) {
   const [localSearch, setLocalSearch] = useState(search);
   const [fontSize, setFontSize] = useState(14);
@@ -116,6 +120,38 @@ export default function SubmissionsTable({
               className="w-full"
             />
           </div>
+          <Select
+            value={status}
+            onValueChange={(value) => {
+              setStatus(value as DocStatus | "ALL");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder={status} />
+            </SelectTrigger>
+            <SelectContent>
+              {[
+                "ALL",
+                "WAITING_FOR_APPROVAL",
+                "CANCELLED",
+                "NOT_APPROVED",
+                "APPROVED_WITH_COMMENT",
+                "APPROVED",
+              ].map((statusOption) => (
+                <SelectItem
+                  key={`status-${statusOption}`}
+                  value={statusOption}
+                  onClick={() => {
+                    setStatus(statusOption as DocStatus | "ALL");
+                    setPage(1);
+                  }}
+                >
+                  {statusOption}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="flex items-center text-muted-foreground">
             <p className="text-xs font-medium mr-3">Font size:</p>
 
