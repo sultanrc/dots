@@ -120,53 +120,57 @@ export default function SubmissionsTable({
               className="w-full"
             />
           </div>
-          <Select
-            value={status}
-            onValueChange={(value) => {
-              setStatus(value as DocStatus | "ALL");
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder={status} />
-            </SelectTrigger>
-            <SelectContent>
-              {[
-                "ALL",
-                "WAITING_FOR_APPROVAL",
-                "CANCELLED",
-                "NOT_APPROVED",
-                "APPROVED_WITH_COMMENT",
-                "APPROVED",
-              ].map((statusOption) => (
-                <SelectItem
-                  key={`status-${statusOption}`}
-                  value={statusOption}
-                  onClick={() => {
-                    setStatus(statusOption as DocStatus | "ALL");
-                    setPage(1);
-                  }}
-                >
-                  {statusOption}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="flex items-center text-muted-foreground">
-            <p className="text-xs font-medium mr-3">Font size:</p>
+          <div className="flex items-center gap-4">
+            <Select
+              value={status}
+              onValueChange={(value) => {
+                setStatus(value as DocStatus | "ALL");
+                setPage(1);
+              }}
+            >
+              <SelectTrigger className="w-40 text-muted-foreground text-xs">
+                <SelectValue placeholder={status} />
+              </SelectTrigger>
+              <SelectContent>
+                {[
+                  "ALL",
+                  "WAITING_FOR_APPROVAL",
+                  "CANCELLED",
+                  "NOT_APPROVED",
+                  "APPROVED_WITH_COMMENT",
+                  "APPROVED",
+                ].map((statusOption) => (
+                  <SelectItem
+                    key={`status-${statusOption}`}
+                    value={statusOption}
+                    onClick={() => {
+                      setStatus(statusOption as DocStatus | "ALL");
+                      setPage(1);
+                    }}
+                  >
+                    {statusOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex items-center text-muted-foreground">
+              <p className="text-xs font-medium mr-3">Font size:</p>
 
-            {fontSizes.map((size) => (
-              <span
-                key={size}
-                onClick={() => setFontSize(size)}
-                style={{ fontSize: `${size}px` }}
-                className={`cursor-pointer px-2 py-1 ${
-                  fontSize === size ? "bg-stone-300 text-white" : ""
-                }`}
-              >
-                A
-              </span>
-            ))}
+              {fontSizes.map((size) => (
+                <span
+                  key={size}
+                  onClick={() => setFontSize(size)}
+                  style={{ fontSize: `${size}px` }}
+                  className={`cursor-pointer px-2 py-1 ${
+                    fontSize === size
+                      ? "bg-stone-300 text-white rounded-sm"
+                      : ""
+                  }`}
+                >
+                  A
+                </span>
+              ))}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
