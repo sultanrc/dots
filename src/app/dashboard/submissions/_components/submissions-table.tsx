@@ -30,6 +30,8 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Columns3 } from "lucide-react";
 import { DocStatus, getSubmissions } from "@/action/action";
@@ -43,6 +45,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
+import { Filter } from "lucide-react";
 
 const statusStyles: Record<string, string> = {
   WAITING_FOR_APPROVAL: "bg-yellow-400 text-black",
@@ -51,6 +54,35 @@ const statusStyles: Record<string, string> = {
   APPROVED_WITH_COMMENT: "bg-orange-400 text-black",
   APPROVED: "bg-green-600 text-white",
 };
+
+const STATUS_OPTIONS: DocStatus[] = [
+  "WAITING_FOR_APPROVAL",
+  "APPROVED",
+  "APPROVED_WITH_COMMENT",
+  "NOT_APPROVED",
+  "CANCELLED",
+  "RECALLED",
+];
+
+const DOCUMENT_TYPE_OPTIONS = [
+  "CIVIL DRAWING",
+  "MECHANICAL DRAWING",
+  "ELECTRICAL DRAWING",
+  "INSTRUMENT DRAWING",
+  "DATA SHEET",
+  "PROSEDUR",
+  "BERITA ACARA",
+  "NOTULENSI",
+  "PROGRESS",
+  "LIFTING PLAN",
+  "TECHNICAL QUERY",
+  "EDL",
+  "LAINNYA",
+];
+
+function toggleInArray<T>(arr: T[], value: T): T[] {
+  return arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
+}
 
 const COLUMNS = [
   { key: "tr_number", label: "TR" },
@@ -95,8 +127,10 @@ export default function SubmissionsTable({
   sortOrder,
   setSortBy,
   setSortOrder,
-  status,
-  setStatus,
+  statuses,
+  setStatuses,
+  documentTypes,
+  setDocumentTypes,
 }: {
   documents?: Awaited<ReturnType<typeof getSubmissions>>;
   page: number;
@@ -111,8 +145,10 @@ export default function SubmissionsTable({
   sortOrder: "asc" | "desc";
   setSortBy: (sortBy: "tr_number" | "created_at") => void;
   setSortOrder: (sortOrder: "asc" | "desc") => void;
-  status: DocStatus | "ALL";
-  setStatus: (status: DocStatus | "ALL") => void;
+  statuses: DocStatus[];
+  setStatuses: (statuses: DocStatus[]) => void;
+  documentTypes: string[];
+  setDocumentTypes: (documentTypes: string[]) => void;
 }) {
   const [localSearch, setLocalSearch] = useState(search);
   const [fontSize, setFontSize] = useState(14);
@@ -129,7 +165,7 @@ export default function SubmissionsTable({
   });
 
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(
-    COLUMNS.map((c) => c.key), // default: semua kolom tampil
+    COLUMNS.map((c) => c.key),
   );
 
   function toggleColumn(key: ColumnKey) {
@@ -137,6 +173,8 @@ export default function SubmissionsTable({
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   }
+
+  const activeFilterCount = statuses.length + documentTypes.length;
 
   return (
     <>
@@ -151,41 +189,49 @@ export default function SubmissionsTable({
             />
           </div>
           <div className="flex items-center gap-4 text-muted-foreground">
-            <Select
-              value={status}
-              onValueChange={(value) => {
-                setStatus(value as DocStatus | "ALL");
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-40 text-xs">
-                <SelectValue placeholder={status} />
-              </SelectTrigger>
-              <SelectContent>
-                {[
-                  "ALL",
-                  "WAITING_FOR_APPROVAL",
-                  "CANCELLED",
-                  "NOT_APPROVED",
-                  "APPROVED_WITH_COMMENT",
-                  "APPROVED",
-                ].map((statusOption) => (
-                  <SelectItem
-                    key={`status-${statusOption}`}
-                    value={statusOption}
-                    onClick={() => {
-                      setStatus(statusOption as DocStatus | "ALL");
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="font-normal">
+                  <Filter className="size-4 mr-1" />
+                  Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Status</DropdownMenuLabel>
+                {STATUS_OPTIONS.map((s) => (
+                  <DropdownMenuCheckboxItem
+                    key={s}
+                    checked={statuses.includes(s)}
+                    onCheckedChange={() => {
+                      setStatuses(toggleInArray(statuses, s));
                       setPage(1);
                     }}
                   >
-                    {statusOption}
-                  </SelectItem>
+                    {s}
+                  </DropdownMenuCheckboxItem>
                 ))}
-              </SelectContent>
-            </Select>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuLabel>Document Type</DropdownMenuLabel>
+                {DOCUMENT_TYPE_OPTIONS.map((t) => (
+                  <DropdownMenuCheckboxItem
+                    key={t}
+                    checked={documentTypes.includes(t)}
+                    onCheckedChange={() => {
+                      setDocumentTypes(toggleInArray(documentTypes, t));
+                      setPage(1);
+                    }}
+                  >
+                    {t}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="font-normal">
                   <Columns3 className="size-4 mr-1" />
                   Columns
                 </Button>
@@ -202,6 +248,7 @@ export default function SubmissionsTable({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
             <div className="flex items-center">
               <p className="text-xs font-medium mr-3">Font size:</p>
 
@@ -292,28 +339,42 @@ export default function SubmissionsTable({
               {!isLoading &&
                 documents?.data?.map((doc) => (
                   <TableRow key={doc.id}>
-                    <TableCell className="font-medium">
-                      {doc.tr_number}
-                    </TableCell>
-                    <TableCell>{doc.document_name}</TableCell>
-                    <TableCell>{doc.document_number}</TableCell>
-                    <TableCell>{doc.rev}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-2 py-0.5 rounded text-xs font-medium ${
-                          statusStyles[doc.status ?? ""] ??
-                          "bg-gray-300 text-black"
-                        }`}
-                      >
-                        {doc.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>{doc.return_date ?? "-"}</TableCell>
-                    <TableCell className="text-right">
-                      {doc.created_at
-                        ? new Date(doc.created_at).toLocaleDateString("id-ID")
-                        : "-"}
-                    </TableCell>
+                    {visibleColumns.includes("tr_number") && (
+                      <TableCell className="font-medium">
+                        {doc.tr_number}
+                      </TableCell>
+                    )}
+                    {visibleColumns.includes("document_name") && (
+                      <TableCell>{doc.document_name}</TableCell>
+                    )}
+                    {visibleColumns.includes("document_number") && (
+                      <TableCell>{doc.document_number}</TableCell>
+                    )}
+                    {visibleColumns.includes("rev") && (
+                      <TableCell>{doc.rev}</TableCell>
+                    )}
+                    {visibleColumns.includes("status") && (
+                      <TableCell>
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs font-medium ${
+                            statusStyles[doc.status ?? ""] ??
+                            "bg-gray-300 text-black"
+                          }`}
+                        >
+                          {doc.status}
+                        </span>
+                      </TableCell>
+                    )}
+                    {visibleColumns.includes("return_date") && (
+                      <TableCell>{doc.return_date ?? "-"}</TableCell>
+                    )}
+                    {visibleColumns.includes("created_at") && (
+                      <TableCell className="text-right">
+                        {doc.created_at
+                          ? new Date(doc.created_at).toLocaleDateString("id-ID")
+                          : "-"}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
             </TableBody>

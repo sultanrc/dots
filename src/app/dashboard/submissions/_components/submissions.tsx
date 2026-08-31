@@ -9,7 +9,8 @@ export default function SubmissionsPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<DocStatus | "ALL">("ALL");
+  const [statuses, setStatuses] = useState<DocStatus[]>([]);
+  const [documentTypes, setDocumentTypes] = useState<string[]>([]);
 
   const [sortBy, setSortBy] = useState<"tr_number" | "created_at">(
     "created_at",
@@ -17,9 +18,26 @@ export default function SubmissionsPage() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["documents", page, limit, search, sortBy, sortOrder, status],
+    queryKey: [
+      "documents",
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder,
+      statuses,
+      documentTypes,
+    ],
     queryFn: () =>
-      getSubmissions({ page, limit, search, sortBy, sortOrder, status }),
+      getSubmissions({
+        page,
+        limit,
+        search,
+        sortBy,
+        sortOrder,
+        statuses,
+        documentTypes,
+      }),
   });
 
   return (
@@ -38,8 +56,10 @@ export default function SubmissionsPage() {
         setSortBy={setSortBy}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
-        status={status}
-        setStatus={setStatus}
+        statuses={statuses}
+        setStatuses={setStatuses}
+        documentTypes={documentTypes}
+        setDocumentTypes={setDocumentTypes}
       />
     </>
   );

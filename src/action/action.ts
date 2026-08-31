@@ -2,14 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-export type DocStatus =
-  | "APPROVED"
-  | "APPROVED_WITH_COMMENT"
-  | "NOT_APPROVED"
-  | "WAITING_FOR_APPROVAL"
-  | "CANCELLED"
-  | "RECALLED";
-
 export async function getDataSummary() {
   const supabase = await createClient();
 
@@ -62,13 +54,22 @@ export async function getActionRequiredDocuments() {
   return data;
 }
 
+export type DocStatus =
+  | "APPROVED"
+  | "APPROVED_WITH_COMMENT"
+  | "NOT_APPROVED"
+  | "WAITING_FOR_APPROVAL"
+  | "CANCELLED"
+  | "RECALLED";
+
 export async function getSubmissions(params?: {
   limit?: number;
   page?: number;
   search?: string;
   sortBy?: "tr_number" | "created_at";
   sortOrder?: "asc" | "desc";
-  status?: DocStatus | "ALL";
+  statuses?: DocStatus[];
+  documentTypes?: string[];
 }) {
   const {
     limit = 10,
@@ -76,7 +77,8 @@ export async function getSubmissions(params?: {
     search,
     sortBy = "created_at",
     sortOrder = "desc",
-    status,
+    statuses = [],
+    documentTypes = [],
   } = params || {};
 
   const supabase = await createClient();
@@ -97,14 +99,21 @@ export async function getSubmissions(params?: {
     );
   }
 
-  if (status && status !== "ALL") {
-    query = query.eq("status", status);
+  if (statuses.length > 0) {
+    query = query.in("status", statuses);
+  }
+
+  if (documentTypes.length > 0) {
+    query = query.in("document_type", documentTypes);
   }
 
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
   const { data, error, count } = await query.range(from, to);
+
+  // uncommand kode di bawah ini utk lihat data yg difetch
+  // console.log(JSON.stringify(data?.[0], null, 2));
 
   if (error) throw new Error(error.message);
 
