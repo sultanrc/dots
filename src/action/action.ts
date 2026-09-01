@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { DocStatus } from "@/app/constants/status";
 
 export async function getDataSummary() {
   const supabase = await createClient();
@@ -53,14 +54,6 @@ export async function getActionRequiredDocuments() {
 
   return data;
 }
-
-export type DocStatus =
-  | "APPROVED"
-  | "APPROVED_WITH_COMMENT"
-  | "NOT_APPROVED"
-  | "WAITING_FOR_APPROVAL"
-  | "CANCELLED"
-  | "RECALLED";
 
 export async function getSubmissions(params?: {
   limit?: number;

@@ -24,17 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 import { Columns3 } from "lucide-react";
-import { DocStatus, getSubmissions } from "@/action/action";
+import { getSubmissions } from "@/action/action";
 import {
   Table,
   TableBody,
@@ -46,55 +37,22 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { Filter } from "lucide-react";
-
-const statusStyles: Record<string, string> = {
-  WAITING_FOR_APPROVAL: "bg-yellow-400 text-black",
-  CANCELLED: "bg-neutral-700 text-white",
-  NOT_APPROVED: "bg-red-600 text-white",
-  APPROVED_WITH_COMMENT: "bg-orange-400 text-black",
-  APPROVED: "bg-green-600 text-white",
-};
-
-const STATUS_OPTIONS: DocStatus[] = [
-  "WAITING_FOR_APPROVAL",
-  "APPROVED",
-  "APPROVED_WITH_COMMENT",
-  "NOT_APPROVED",
-  "CANCELLED",
-  "RECALLED",
-];
-
-const DOCUMENT_TYPE_OPTIONS = [
-  "CIVIL DRAWING",
-  "MECHANICAL DRAWING",
-  "ELECTRICAL DRAWING",
-  "INSTRUMENT DRAWING",
-  "DATA SHEET",
-  "PROSEDUR",
-  "BERITA ACARA",
-  "NOTULENSI",
-  "PROGRESS",
-  "LIFTING PLAN",
-  "TECHNICAL QUERY",
-  "EDL",
-  "LAINNYA",
-];
+import {
+  DOCUMENT_TYPE_OPTIONS,
+  COLUMNS,
+  ColumnKey,
+} from "@/app/constants/column";
+import {
+  DocStatus,
+  STATUS_OPTIONS,
+  statusStyles,
+} from "@/app/constants/status";
+import { ColumnVisibilityDropdown } from "./column-visibility-dropdown";
+import { FilterDropdown } from "./filter-dropdown";
 
 function toggleInArray<T>(arr: T[], value: T): T[] {
   return arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
 }
-
-const COLUMNS = [
-  { key: "tr_number", label: "TR" },
-  { key: "document_name", label: "Document Name" },
-  { key: "document_number", label: "Doc. Number" },
-  { key: "rev", label: "Rev" },
-  { key: "status", label: "Status" },
-  { key: "return_date", label: "Return Date" },
-  { key: "created_at", label: "Submitted" },
-] as const;
-
-type ColumnKey = (typeof COLUMNS)[number]["key"];
 
 function SortIcon({
   column,
@@ -153,6 +111,7 @@ export default function SubmissionsTable({
   const [localSearch, setLocalSearch] = useState(search);
   const [fontSize, setFontSize] = useState(14);
   const fontSizes = [14, 12, 10];
+  const activeFilterCount = statuses.length + documentTypes.length;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -164,17 +123,27 @@ export default function SubmissionsTable({
     return () => clearTimeout(timer);
   });
 
+  // -----------------
+  // * HIDE COLUMN
+  // * ini state utk menyimpan kolom yg terlihat (bisa dihover di visibleColumns utk lebih jelasnya)
+
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(
     COLUMNS.map((c) => c.key),
   );
 
+  // * ini adalah logic utama dari fitur ini
+  // * awalnya ngecek "apakah kolom ini sudah ada di visibleColumns?"
+  // * kalo ada, sembunyikan kolomnya. dan sebaliknya
   function toggleColumn(key: ColumnKey) {
     setVisibleColumns((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
     );
   }
-
-  const activeFilterCount = statuses.length + documentTypes.length;
+  // ? prev = data kolom sebelumnya(visibleColumns)
+  // ? includes = mengecek ada atau tidak sebuah data
+  // ? prev.includes(key) = ada data (key) gk di dalam prev?
+  // ? filter(apa yg mau di-exclude)
+  // -----------------
 
   return (
     <>
@@ -189,65 +158,18 @@ export default function SubmissionsTable({
             />
           </div>
           <div className="flex items-center gap-4 text-muted-foreground">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="font-normal">
-                  <Filter className="size-4 mr-1" />
-                  Filter {activeFilterCount > 0 && `(${activeFilterCount})`}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Status</DropdownMenuLabel>
-                {STATUS_OPTIONS.map((s) => (
-                  <DropdownMenuCheckboxItem
-                    key={s}
-                    checked={statuses.includes(s)}
-                    onCheckedChange={() => {
-                      setStatuses(toggleInArray(statuses, s));
-                      setPage(1);
-                    }}
-                  >
-                    {s}
-                  </DropdownMenuCheckboxItem>
-                ))}
+            <FilterDropdown
+              statuses={statuses}
+              setStatuses={setStatuses}
+              documentTypes={documentTypes}
+              setDocumentTypes={setDocumentTypes}
+              setPage={setPage}
+            />
 
-                <DropdownMenuSeparator />
-
-                <DropdownMenuLabel>Document Type</DropdownMenuLabel>
-                {DOCUMENT_TYPE_OPTIONS.map((t) => (
-                  <DropdownMenuCheckboxItem
-                    key={t}
-                    checked={documentTypes.includes(t)}
-                    onCheckedChange={() => {
-                      setDocumentTypes(toggleInArray(documentTypes, t));
-                      setPage(1);
-                    }}
-                  >
-                    {t}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="font-normal">
-                  <Columns3 className="size-4 mr-1" />
-                  Columns
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {COLUMNS.map((col) => (
-                  <DropdownMenuCheckboxItem
-                    key={col.key}
-                    checked={visibleColumns.includes(col.key)}
-                    onCheckedChange={() => toggleColumn(col.key)}
-                  >
-                    {col.label}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ColumnVisibilityDropdown
+              visibleColumns={visibleColumns}
+              setVisibleColumns={setVisibleColumns}
+            />
 
             <div className="flex items-center">
               <p className="text-xs font-medium mr-3">Font size:</p>
