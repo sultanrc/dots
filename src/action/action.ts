@@ -119,14 +119,55 @@ export async function getSubmissions(params?: {
   };
 }
 
-// export async function getDocumentTypes() {
-//   const supabase = await createClient();
-//   const { data, error } = await supabase
-//     .from("document_type")
-//     .select("id, name")
-//     .order("name");
+export async function getDocumentTypes() {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("document_type")
+    .select("id, name")
+    .order("name");
 
-//   if (error) throw new Error(error.message);
+  if (error) throw new Error(error.message);
 
-//   return data;
-// }
+  return data;
+}
+
+export async function createSubmission(payload: {
+  trNumber: string;
+  submitDate: string;
+  documents: {
+    documentName: string;
+    documentNumber: string | null;
+    documentTypeId: string;
+    rev: number;
+  }[];
+}) {
+  const supabase = await createClient();
+
+  const { data: transmittal, error: transmittalError } = await supabase
+    .from("transmittal")
+    .insert({
+      tr_number: payload.trNumber,
+      submit_date: payload.submitDate,
+    })
+    .select("id")
+    .single();
+
+  if (transmittalError) throw new Error(transmittalError.message);
+
+  const documentsToInsert = payload.documents.map((doc) => ({
+    transmittal_id: transmittal.id,
+    document_name: doc.documentName,
+    document_number: doc.documentNumber,
+    document_type_id: doc.documentTypeId,
+    rev: doc.rev,
+    status: "WAITING_FOR_APPROVAL" as const,
+  }));
+
+  const { error: documentsError } = await supabase
+    .from("document")
+    .insert(documentsToInsert);
+
+  if (documentsError) throw new Error(documentsError.message);
+
+  return { success: true, message: "Submission created successfully." };
+}
