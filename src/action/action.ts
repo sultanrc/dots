@@ -118,3 +118,15 @@ export async function getSubmissions(params?: {
     totalPages: Math.ceil(totalData / limit),
   };
 }
+
+// export async function getDocumentTypes() {
+//   const supabase = await createClient();
+//   const { data, error } = await supabase
+//     .from("document_type")
+//     .select("id, name")
+//     .order("name");
+
+//   if (error) throw new Error(error.message);
+
+//   return data;
+// }

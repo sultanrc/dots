@@ -1,14 +1,7 @@
 "use client";
 
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Pagination,
@@ -24,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Columns3 } from "lucide-react";
 import { getSubmissions } from "@/action/action";
 import {
   Table,
@@ -36,23 +28,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { Filter } from "lucide-react";
-import {
-  DOCUMENT_TYPE_OPTIONS,
-  COLUMNS,
-  ColumnKey,
-} from "@/app/constants/column";
-import {
-  DocStatus,
-  STATUS_OPTIONS,
-  statusStyles,
-} from "@/app/constants/status";
+import { COLUMNS, ColumnKey } from "@/app/constants/column";
+import { DocStatus, statusStyles } from "@/app/constants/status";
 import { ColumnVisibilityDropdown } from "./column-visibility-dropdown";
 import { FilterDropdown } from "./filter-dropdown";
-
-function toggleInArray<T>(arr: T[], value: T): T[] {
-  return arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
-}
 
 function SortIcon({
   column,
@@ -111,7 +90,6 @@ export default function SubmissionsTable({
   const [localSearch, setLocalSearch] = useState(search);
   const [fontSize, setFontSize] = useState(14);
   const fontSizes = [14, 12, 10];
-  const activeFilterCount = statuses.length + documentTypes.length;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -144,6 +122,12 @@ export default function SubmissionsTable({
   // ? prev.includes(key) = ada data (key) gk di dalam prev?
   // ? filter(apa yg mau di-exclude)
   // -----------------
+
+  function toggleInArray<T>(arr: T[], value: T): T[] {
+    return arr.includes(value)
+      ? arr.filter((v) => v !== value)
+      : [...arr, value];
+  }
 
   return (
     <>

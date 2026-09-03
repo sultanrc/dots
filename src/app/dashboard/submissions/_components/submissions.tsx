@@ -3,7 +3,8 @@
 import { useState } from "react";
 import SubmissionsTable from "./submissions-table";
 import { useQuery } from "@tanstack/react-query";
-import { DocStatus, getSubmissions } from "@/action/action";
+import { getSubmissions } from "@/action/action";
+import { DocStatus } from "@/app/constants/status";
 
 export default function SubmissionsPage() {
   const [page, setPage] = useState(1);
