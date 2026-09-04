@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import SubmissionsPage from "./_components/submissions";
 import { Printer } from "lucide-react";
 import { Plus } from "lucide-react";
+import { InsertButton } from "./_components/insert-dialog";
 
 export default async function Submissions() {
   return (
@@ -14,10 +15,7 @@ export default async function Submissions() {
           </p>
         </section>
         <section id="header-actions" className="flex w-36 items-end gap-2">
-          <Button variant="outline">
-            <Plus />
-            Insert
-          </Button>
+          <InsertButton />
           <Button variant="outline">
             <Printer />
           </Button>

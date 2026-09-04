@@ -130,7 +130,6 @@ export async function getDocumentTypes() {
 
   return data;
 }
-
 export async function createSubmission(payload: {
   trNumber: string;
   submitDate: string;
