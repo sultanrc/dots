@@ -110,14 +110,14 @@ export function InsertButton() {
           Insert
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>New Submission</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="space-y-2">
               <Label>TR Number</Label>
               <Input
                 value={trNumber}
@@ -125,7 +125,7 @@ export function InsertButton() {
                 placeholder="e.g. 007"
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label>Submit Date</Label>
               <Input
                 type="date"
@@ -135,10 +135,10 @@ export function InsertButton() {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-2">
             <Label>Documents</Label>
             {documents.map((doc, index) => (
-              <div key={index} className="flex gap-2 items-start">
+              <div key={index} className="flex flex-col gap-2 items-start">
                 <Input
                   placeholder="Document name"
                   value={doc.documentName}
