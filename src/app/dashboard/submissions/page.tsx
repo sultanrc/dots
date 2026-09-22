@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import SubmissionsPage from "./_components/submissions";
 import { Printer } from "lucide-react";
-import { Plus } from "lucide-react";
 import { InsertButton } from "./_components/insert-dialog";
 
 export default async function Submissions() {

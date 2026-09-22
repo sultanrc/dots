@@ -170,3 +170,15 @@ export async function createSubmission(payload: {
 
   return { success: true, message: "Submission created successfully." };
 }
+export async function deleteDocument(documentId: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("document")
+    .delete()
+    .eq("id", documentId);
+
+  if (error) throw new Error(error.message);
+
+  return { success: true };
+}
