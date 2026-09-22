@@ -37,7 +37,6 @@ export async function getDataSummary() {
     totalNeedUpdate: totalNeedUpdate ?? 0,
   };
 }
-
 export async function getActionRequiredDocuments() {
   const supabase = await createClient();
 
@@ -54,7 +53,6 @@ export async function getActionRequiredDocuments() {
 
   return data;
 }
-
 export async function getSubmissions(params?: {
   limit?: number;
   page?: number;
@@ -118,7 +116,6 @@ export async function getSubmissions(params?: {
     totalPages: Math.ceil(totalData / limit),
   };
 }
-
 export async function getDocumentTypes() {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -176,6 +173,35 @@ export async function deleteDocument(documentId: string) {
   const { error } = await supabase
     .from("document")
     .delete()
+    .eq("id", documentId);
+
+  if (error) throw new Error(error.message);
+
+  return { success: true };
+}
+export async function updateDocument(
+  documentId: string,
+  data: {
+    documentName: string;
+    documentNumber: string | null;
+    documentTypeId: string;
+    rev: number;
+    status: DocStatus;
+    returnDate: string | null;
+  },
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("document")
+    .update({
+      document_name: data.documentName,
+      document_number: data.documentNumber,
+      document_type_id: data.documentTypeId,
+      rev: data.rev,
+      status: data.status,
+      return_date: data.returnDate,
+    })
     .eq("id", documentId);
 
   if (error) throw new Error(error.message);

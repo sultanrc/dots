@@ -35,6 +35,7 @@ import { FilterDropdown } from "./filter-dropdown";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DeleteButton } from "./delete-button";
+import { EditButton } from "./edit-button";
 
 function SortIcon({
   column,
@@ -286,22 +287,23 @@ export default function SubmissionsTable({
                       </TableCell>
                     )}
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-muted-foreground hover:text-yellow-500"
-                          onClick={() => {}}
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-                        {doc.id && (
+                      {doc.id && (
+                        <div className="flex justify-end gap-1">
+                          <EditButton
+                            documentId={doc.id}
+                            documentName={doc.document_name ?? ""}
+                            documentNumber={doc.document_number}
+                            documentTypeId={doc.document_type_id}
+                            rev={doc.rev ?? 0}
+                            status={doc.status as DocStatus}
+                            returnDate={doc.return_date}
+                          />
                           <DeleteButton
                             documentId={doc.id}
                             documentName={doc.document_name ?? "this document"}
                           />
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
