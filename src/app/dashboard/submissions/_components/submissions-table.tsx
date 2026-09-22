@@ -32,6 +32,9 @@ import { COLUMNS, ColumnKey } from "@/app/constants/column";
 import { DocStatus, statusStyles } from "@/app/constants/status";
 import { ColumnVisibilityDropdown } from "./column-visibility-dropdown";
 import { FilterDropdown } from "./filter-dropdown";
+import { Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DeleteButton } from "./delete-button";
 
 function SortIcon({
   column,
@@ -239,6 +242,7 @@ export default function SubmissionsTable({
                     </div>
                   </TableHead>
                 )}
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -281,6 +285,24 @@ export default function SubmissionsTable({
                           : "-"}
                       </TableCell>
                     )}
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-yellow-500"
+                          onClick={() => {}}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        {doc.id && (
+                          <DeleteButton
+                            documentId={doc.id}
+                            documentName={doc.document_name ?? "this document"}
+                          />
+                        )}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
             </TableBody>
