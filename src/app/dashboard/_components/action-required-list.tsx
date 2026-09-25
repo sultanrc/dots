@@ -14,8 +14,8 @@ export async function ActionRequiredList() {
   const documents = await getActionRequiredDocuments();
 
   return (
-    <div className="flex flex-col border">
-      <h4 className="p-3 text-sm leading-none font-medium bg-gray-300">
+    <div className="flex flex-col border rounded-md">
+      <h4 className="p-3 text-sm leading-none font-medium bg-gray-300 rounded-t-md">
         Documents Requiring Attention
       </h4>
       <ScrollArea className="h-96 w-full min-w-0">

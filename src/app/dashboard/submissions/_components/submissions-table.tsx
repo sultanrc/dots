@@ -110,7 +110,7 @@ export default function SubmissionsTable({
   // * ini state utk menyimpan kolom yg terlihat (bisa dihover di visibleColumns utk lebih jelasnya)
 
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(
-    COLUMNS.map((c) => c.key),
+    COLUMNS.map((c) => c.key).filter((key) => key !== "return_date"),
   );
 
   // * ini adalah logic utama dari fitur ini
@@ -145,7 +145,7 @@ export default function SubmissionsTable({
               className="w-full"
             />
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <FilterDropdown
               statuses={statuses}
               setStatuses={setStatuses}
@@ -158,29 +158,10 @@ export default function SubmissionsTable({
               visibleColumns={visibleColumns}
               setVisibleColumns={setVisibleColumns}
             />
-
-            <div className="flex items-center">
-              <p className="text-xs font-medium mr-3">Font size:</p>
-
-              {fontSizes.map((size) => (
-                <span
-                  key={size}
-                  onClick={() => setFontSize(size)}
-                  style={{ fontSize: `${size}px` }}
-                  className={`cursor-pointer px-2 py-1 ${
-                    fontSize === size
-                      ? "bg-stone-300 text-white rounded-sm"
-                      : ""
-                  }`}
-                >
-                  A
-                </span>
-              ))}
-            </div>
           </div>
         </CardHeader>
         <CardContent>
-          <Table style={{ fontSize: `${fontSize}px` }}>
+          <Table>
             <TableHeader>
               <TableRow>
                 {visibleColumns.includes("tr_number") && (
@@ -217,9 +198,6 @@ export default function SubmissionsTable({
                 {visibleColumns.includes("status") && (
                   <TableHead>Status</TableHead>
                 )}
-                {visibleColumns.includes("return_date") && (
-                  <TableHead>Return Date</TableHead>
-                )}
                 {visibleColumns.includes("created_at") && (
                   <TableHead
                     className="text-right cursor-pointer select-none"
@@ -242,6 +220,9 @@ export default function SubmissionsTable({
                       />
                     </div>
                   </TableHead>
+                )}
+                {visibleColumns.includes("return_date") && (
+                  <TableHead>Return Date</TableHead>
                 )}
                 <TableHead></TableHead>
               </TableRow>
