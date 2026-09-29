@@ -4,15 +4,17 @@ import {
   SidebarInset,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { getCurrentUser } from "@/action/action";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { name, email } = await getCurrentUser();
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar userName={name} userEmail={email} />
       <SidebarInset>
         <SidebarTrigger />
         {children}

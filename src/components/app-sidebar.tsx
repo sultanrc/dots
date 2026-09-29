@@ -35,7 +35,13 @@ const menuItems = [
   // },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({
+  userName,
+  userEmail,
+}: {
+  userName: string;
+  userEmail: string;
+}) {
   return (
     <Sidebar>
       <SidebarHeader />
@@ -59,19 +65,17 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarFooter>
-          <div className="flex flex-col items-start gap-3 px-2 py-2 ">
-            <div className="min-w-0 items-start">
-              <p className="truncate text-sm font-medium">User</p>
-              <p className="truncate text-xs text-muted-foreground">
-                user@gmail.com
-              </p>
-            </div>
+        <div className="flex flex-col items-start gap-3 px-2 py-2">
+          <div className="min-w-0 items-start">
+            <p className="truncate text-sm font-medium">{userName}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {userEmail}
+            </p>
           </div>
-          <div className="flex flex-col items-end gap-3 px-2 py-2">
-            <LogoutButton />
-          </div>
-        </SidebarFooter>
+        </div>
+        <div className="flex flex-col items-end gap-3 px-2 py-2">
+          <LogoutButton />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
