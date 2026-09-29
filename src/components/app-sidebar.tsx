@@ -15,6 +15,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+import { LogoutButton } from "@/components/logout-button";
+
 const menuItems = [
   {
     title: "Dashboard",
@@ -56,7 +58,21 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <SidebarFooter>
+          <div className="flex flex-col items-start gap-3 px-2 py-2 ">
+            <div className="min-w-0 items-start">
+              <p className="truncate text-sm font-medium">User</p>
+              <p className="truncate text-xs text-muted-foreground">
+                user@gmail.com
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-3 px-2 py-2">
+            <LogoutButton />
+          </div>
+        </SidebarFooter>
+      </SidebarFooter>
     </Sidebar>
   );
 }

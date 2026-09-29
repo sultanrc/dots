@@ -48,7 +48,7 @@ export const supabaseProxy = async (request: NextRequest) => {
   // mengarahkan ke halaman login jika pengguna belum login dan mencoba mengakses halaman selain login.
   if (!user && !request.nextUrl.pathname.startsWith("/login")) {
     // const url = request.nextUrl.clone();
-    // url.pathname = '/login';
+    // url.pathname = "/login";
     // return NextResponse.redirect(url);
   }
 
