@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { LogoutButton } from "@/components/logout-button";
+import Image from "next/image";
 
 const menuItems = [
   {
@@ -44,7 +45,15 @@ export function AppSidebar({
 }) {
   return (
     <Sidebar>
-      <SidebarHeader />
+      <SidebarHeader>
+        <Image
+          src="/dots-logo2.png"
+          alt="Logo"
+          width={100}
+          height={20}
+          className="ml-6 mt-4 mb-2"
+        />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>

@@ -139,11 +139,16 @@ export async function createSubmission(payload: {
 }) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data: transmittal, error: transmittalError } = await supabase
     .from("transmittal")
     .insert({
       tr_number: payload.trNumber,
       submit_date: payload.submitDate,
+      created_by: user?.id ?? null,
     })
     .select("id")
     .single();
@@ -157,6 +162,7 @@ export async function createSubmission(payload: {
     document_type_id: doc.documentTypeId,
     rev: doc.rev,
     status: "WAITING_FOR_APPROVAL" as const,
+    created_by: user?.id ?? null,
   }));
 
   const { error: documentsError } = await supabase
@@ -192,6 +198,10 @@ export async function updateDocument(
 ) {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { error } = await supabase
     .from("document")
     .update({
@@ -201,6 +211,7 @@ export async function updateDocument(
       rev: data.rev,
       status: data.status,
       return_date: data.returnDate,
+      updated_by: user?.id ?? null,
     })
     .eq("id", documentId);
 

@@ -27,6 +27,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
 import { COLUMNS, ColumnKey } from "@/app/constants/column";
 import { DocStatus, statusStyles } from "@/app/constants/status";
