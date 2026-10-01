@@ -16,43 +16,30 @@ import {
 } from "@/components/ui/sidebar";
 
 import { LogoutButton } from "@/components/logout-button";
-import Image from "next/image";
+import { ProjectSwitcher } from "@/components/project-switcher";
 
 const menuItems = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Submissions",
-    url: "/dashboard/submissions",
-    icon: FileClock,
-  },
-  // {
-  //   title: "EDL",
-  //   url: "/dashboard/edl",
-  //   icon: FileText,
-  // },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Submissions", url: "/dashboard/submissions", icon: FileClock },
 ];
+
+type Project = { id: string; name: string; code: string | null };
 
 export function AppSidebar({
   userName,
   userEmail,
+  projects,
+  activeProject,
 }: {
   userName: string;
   userEmail: string;
+  projects: Project[];
+  activeProject: Project | null;
 }) {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Image
-          src="/dots-logo2.png"
-          alt="Logo"
-          width={100}
-          height={20}
-          className="ml-6 mt-4 mb-2"
-        />
+        <ProjectSwitcher projects={projects} activeProject={activeProject} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

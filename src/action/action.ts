@@ -2,7 +2,46 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { DocStatus } from "@/app/constants/status";
+import { cookies } from "next/headers";
 
+export async function getUserProjects() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("user_project")
+    .select("project:project_id(id, name, code)")
+    .eq("user_id", user.id);
+
+  if (error) throw new Error(error.message);
+
+  // data berbentuk [{ project: {...} }], kita rapikan jadi array project langsung
+  return data.map((row) => row.project).filter(Boolean);
+}
+export async function getActiveProject() {
+  const projects = await getUserProjects();
+  if (projects.length === 0) return null;
+
+  const cookieStore = await cookies();
+  const activeProjectId = cookieStore.get("active_project_id")?.value;
+
+  const found = projects.find((p) => p.id === activeProjectId);
+
+  // kalau cookie kosong / nunjuk ke proyek yang user nggak punya akses, fallback ke yang pertama
+  return found ?? projects[0];
+}
+export async function setActiveProject(projectId: string) {
+  const cookieStore = await cookies();
+  cookieStore.set("active_project_id", projectId, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365, // 1 tahun
+  });
+}
 export async function getDataSummary() {
   const supabase = await createClient();
 
@@ -143,18 +182,27 @@ export async function createSubmission(payload: {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Ambil proyek yang sedang aktif
+  const activeProject = await getActiveProject();
+  if (!activeProject) {
+    throw new Error("No active project selected");
+  }
+
+  // 1. Insert transmittal, sertakan project_id dan created_by
   const { data: transmittal, error: transmittalError } = await supabase
     .from("transmittal")
     .insert({
       tr_number: payload.trNumber,
       submit_date: payload.submitDate,
       created_by: user?.id ?? null,
+      project_id: activeProject.id,
     })
     .select("id")
     .single();
 
   if (transmittalError) throw new Error(transmittalError.message);
 
+  // 2. Insert dokumen (tidak berubah, document tidak punya project_id langsung)
   const documentsToInsert = payload.documents.map((doc) => ({
     transmittal_id: transmittal.id,
     document_name: doc.documentName,
@@ -171,7 +219,7 @@ export async function createSubmission(payload: {
 
   if (documentsError) throw new Error(documentsError.message);
 
-  return { success: true, message: "Submission created successfully." };
+  return { success: true };
 }
 export async function deleteDocument(documentId: string) {
   const supabase = await createClient();

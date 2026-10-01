@@ -92,11 +92,30 @@ export type Database = {
         }
         Relationships: []
       }
+      project: {
+        Row: {
+          code: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          code?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       transmittal: {
         Row: {
           created_at: string
           created_by: string | null
           id: string
+          project_id: string
           submit_date: string
           tr_number: string
           updated_at: string
@@ -106,6 +125,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          project_id: string
           submit_date: string
           tr_number: string
           updated_at?: string
@@ -115,27 +135,64 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          project_id?: string
           submit_date?: string
           tr_number?: string
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transmittal_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_project: {
+        Row: {
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_project_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       submissions: {
         Row: {
           created_at: string | null
+          created_by: string | null
           document_name: string | null
           document_number: string | null
           document_type: string | null
           document_type_id: string | null
           id: string | null
+          project_code: string | null
+          project_id: string | null
+          project_name: string | null
           return_date: string | null
           rev: number | null
           status: Database["public"]["Enums"]["doc_status"] | null
           tr_number: string | null
+          updated_by: string | null
         }
         Relationships: [
           {
@@ -143,6 +200,13 @@ export type Database = {
             columns: ["document_type_id"]
             isOneToOne: false
             referencedRelation: "document_type"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transmittal_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project"
             referencedColumns: ["id"]
           },
         ]

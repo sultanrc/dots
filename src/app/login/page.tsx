@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/action/auth";
-import Image from "next/image";
+// import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -28,7 +28,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col gap-6 items-center justify-center">
-      <Image src="/dots-logo2.png" alt="Logo" width={180} height={100} />
+      {/* <Image src="/dots-logo2.png" alt="Logo" width={180} height={100} /> */}
       <div className="px-8 py-9 border rounded-2xl">
         <form onSubmit={handleSubmit} className="w-80 space-y-4">
           <h1 className="text-2xl font-bold">Login</h1>

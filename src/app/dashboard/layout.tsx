@@ -4,7 +4,11 @@ import {
   SidebarInset,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { getCurrentUser } from "@/action/action";
+import {
+  getCurrentUser,
+  getUserProjects,
+  getActiveProject,
+} from "@/action/action";
 
 export default async function DashboardLayout({
   children,
@@ -12,9 +16,17 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { name, email } = await getCurrentUser();
+  const projects = await getUserProjects();
+  const activeProject = await getActiveProject();
+
   return (
     <SidebarProvider>
-      <AppSidebar userName={name} userEmail={email} />
+      <AppSidebar
+        userName={name}
+        userEmail={email}
+        projects={projects}
+        activeProject={activeProject}
+      />
       <SidebarInset>
         <SidebarTrigger />
         {children}
