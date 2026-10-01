@@ -6,11 +6,9 @@ import { cookies } from "next/headers";
 
 export async function getUserProjects() {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) return [];
 
   const { data, error } = await supabase
@@ -18,9 +16,11 @@ export async function getUserProjects() {
     .select("project:project_id(id, name, code)")
     .eq("user_id", user.id);
 
+  console.log("getUserProjects raw:", JSON.stringify(data, null, 2));
+  console.log("getUserProjects error:", error);
+
   if (error) throw new Error(error.message);
 
-  // data berbentuk [{ project: {...} }], kita rapikan jadi array project langsung
   return data.map((row) => row.project).filter(Boolean);
 }
 export async function getActiveProject() {
@@ -45,29 +45,60 @@ export async function setActiveProject(projectId: string) {
 export async function getDataSummary() {
   const supabase = await createClient();
 
+  const activeProject = await getActiveProject();
+  if (!activeProject) {
+    return {
+      totalTransmittal: 0,
+      totalApproved: 0,
+      totalOutstanding: 0,
+      totalNeedUpdate: 0,
+    };
+  }
+
+  const results = await Promise.all([
+    supabase
+      .from("transmittal")
+      .select("*", { count: "exact", head: true })
+      .eq("project_id", activeProject.id),
+
+    supabase
+      .from("document")
+      .select("*, transmittal!inner(project_id)", {
+        count: "exact",
+        head: true,
+      })
+      .eq("transmittal.project_id", activeProject.id)
+      .in("status", ["APPROVED", "APPROVED_WITH_COMMENT"]),
+
+    supabase
+      .from("document")
+      .select("*, transmittal!inner(project_id)", {
+        count: "exact",
+        head: true,
+      })
+      .eq("transmittal.project_id", activeProject.id)
+      .eq("status", "WAITING_FOR_APPROVAL"),
+
+    supabase
+      .from("document")
+      .select("*, transmittal!inner(project_id)", {
+        count: "exact",
+        head: true,
+      })
+      .eq("transmittal.project_id", activeProject.id)
+      .eq("status", "NOT_APPROVED"),
+  ]);
+
+  results.forEach((r, i) => {
+    if (r.error) console.error(`Query ${i} error:`, r.error);
+  });
+
   const [
     { count: totalTransmittal },
     { count: totalApproved },
     { count: totalOutstanding },
     { count: totalNeedUpdate },
-  ] = await Promise.all([
-    supabase.from("transmittal").select("*", { count: "exact", head: true }),
-
-    supabase
-      .from("document")
-      .select("*", { count: "exact", head: true })
-      .in("status", ["APPROVED", "APPROVED_WITH_COMMENT"]),
-
-    supabase
-      .from("document")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "WAITING_FOR_APPROVAL"),
-
-    supabase
-      .from("document")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "NOT_APPROVED"),
-  ]);
+  ] = results;
 
   return {
     totalTransmittal: totalTransmittal ?? 0,
@@ -113,12 +144,19 @@ export async function getSubmissions(params?: {
 
   const supabase = await createClient();
 
-  let query = supabase.from("submissions").select("*", { count: "exact" });
+  // Ambil proyek aktif, filter query berdasarkan ini
+  const activeProject = await getActiveProject();
+  if (!activeProject) {
+    return { data: [], totalData: 0, totalPages: 0 };
+  }
+
+  let query = supabase
+    .from("submissions")
+    .select("*", { count: "exact" })
+    .eq("project_id", activeProject.id); // ← tambahan utama
 
   if (sortBy === "tr_number") {
-    query = query.order("tr_number", {
-      ascending: sortOrder === "asc",
-    });
+    query = query.order("tr_number", { ascending: sortOrder === "asc" });
   } else {
     query = query.order("created_at", { ascending: sortOrder === "asc" });
   }
@@ -141,9 +179,6 @@ export async function getSubmissions(params?: {
   const to = from + limit - 1;
 
   const { data, error, count } = await query.range(from, to);
-
-  // uncommand kode di bawah ini utk lihat data yg difetch
-  // console.log(JSON.stringify(data?.[0], null, 2));
 
   if (error) throw new Error(error.message);
 
